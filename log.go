@@ -3,8 +3,9 @@ package log
 import (
 	"encoding/json"
 	"fmt"
-	"path"
+	"os"
 	"runtime"
+	"strings"
 	"time"
 )
 
@@ -36,15 +37,30 @@ func (s Status) prefix() string {
 }
 
 func (s Status) printString(str string) {
-	internalFormat := "%s %s [%s:%d] %s\n"
+	internalFormat := "%s %s %s(%d): %s\n%s\n\n"
 	dateTime := time.Now().Format("02.01.06 15:04:05.000")
-	_, file, line, _ := runtime.Caller(3)
-	_, filename := path.Split(file)
-	fmt.Printf(internalFormat, s.prefix(), dateTime, filename, line, str)
+	pc, file, line, _ := runtime.Caller(3)
+	dir, _ := os.Getwd()
+	filename := strings.Replace(file, dir, "", 1)
+	function := runtime.FuncForPC(pc)
+	fmt.Printf(internalFormat, s.prefix(), dateTime, filename, line, function.Name(), str)
 }
 
 func (s Status) print(i ...interface{}) {
-	s.printString(fmt.Sprint(i...))
+	f := ""
+	for _ = range i {
+		f += "%v "
+	}
+	s.printString(fmt.Sprintf(f, i...))
+}
+
+func (s Status) println(i ...interface{}) {
+	f := ""
+	for _ = range i {
+		f += "%v "
+	}
+	f += "\n"
+	s.printString(fmt.Sprintf(f, i...))
 }
 
 func (s Status) printf(f string, i ...interface{}) {
@@ -57,6 +73,11 @@ func Debug(err interface{}, i ...interface{}) bool {
 	}
 	ErrorStatus.printf("%#v %s", err, fmt.Sprint(i...))
 	return true
+}
+
+func Fatalln(i ...interface{}) {
+	ErrorStatus.println(i...)
+	panic("")
 }
 
 func Info(i ...interface{}) {
