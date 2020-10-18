@@ -88,6 +88,14 @@ func Infof(f string, i ...interface{}) {
 	InfoStatus.printf(f, i...)
 }
 
+func Infov(i ...interface{}) {
+	f := ""
+	for j := 0; j < len(i); j++ {
+		f += "%#v "
+	}
+	InfoStatus.printf(f, i...)
+}
+
 func Pretty(s interface{}) {
 	sJson, _ := json.MarshalIndent(s, "", "\t")
 	InfoStatus.print(string(sJson))
