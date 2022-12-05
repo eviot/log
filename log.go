@@ -67,11 +67,31 @@ func (s Status) printf(f string, i ...interface{}) {
 	s.printString(fmt.Sprintf(f, i...))
 }
 
-func Debug(err interface{}, i ...interface{}) bool {
+// Debug prints error and returns true if err != nil,
+// otherwise it just returns false without printing anything
+func Debug(err error, i ...interface{}) bool {
 	if err == nil {
 		return false
 	}
-	ErrorStatus.printf("%#v %s", err, fmt.Sprint(i...))
+
+	ErrorStatus.printf("%v %s", err, fmt.Sprint(i...))
+	return true
+}
+
+// Debug prints error and returns true if err != nil,
+// otherwise it just returns false without printing anything.
+// Prints any other values through "%#v"
+func Debugv(err error, i ...interface{}) bool {
+	if err == nil {
+		return false
+	}
+
+	f := "%v "
+	for j := 0; j < len(i); j++ {
+		f += "%#v "
+	}
+	items := []interface{}{err}
+	ErrorStatus.printf(f, append(items, i...)...)
 	return true
 }
 
@@ -96,6 +116,7 @@ func Infov(i ...interface{}) {
 	InfoStatus.printf(f, i...)
 }
 
+// Pretty converts `s` to json with <TAB> indent and prints it out
 func Pretty(s interface{}) {
 	sJson, _ := json.MarshalIndent(s, "", "\t")
 	InfoStatus.print(string(sJson))
