@@ -48,7 +48,7 @@ func (s Status) printString(str string) {
 
 func (s Status) print(i ...interface{}) {
 	f := ""
-	for _ = range i {
+	for range i {
 		f += "%v "
 	}
 	s.printString(fmt.Sprintf(f, i...))
@@ -56,7 +56,7 @@ func (s Status) print(i ...interface{}) {
 
 func (s Status) println(i ...interface{}) {
 	f := ""
-	for _ = range i {
+	for range i {
 		f += "%v "
 	}
 	f += "\n"
@@ -69,7 +69,7 @@ func (s Status) printf(f string, i ...interface{}) {
 
 // Debug prints error and returns true if err != nil,
 // otherwise it just returns false without printing anything
-func Debug(err error, i ...interface{}) bool {
+func Debug(err interface{}, i ...interface{}) bool {
 	if err == nil {
 		return false
 	}
@@ -81,7 +81,7 @@ func Debug(err error, i ...interface{}) bool {
 // Debug prints error and returns true if err != nil,
 // otherwise it just returns false without printing anything.
 // Prints any other values through "%#v"
-func Debugv(err error, i ...interface{}) bool {
+func Debugv(err interface{}, i ...interface{}) bool {
 	if err == nil {
 		return false
 	}
